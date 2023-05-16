@@ -3,6 +3,8 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+    // Возможно стоит разделить макет на несколько компонентов с собственной логикой,
+    // но в данном примере это не целесообразно
     return (
         <>
             <header className="panel">Header</header>

@@ -2,9 +2,20 @@ import React, { useCallback, useEffect, useState } from "react"
 import Card from "./Card"
 import useDimensions from "../hooks/useDimensions"
 
-const Workspace: React.FC = () => {
+interface PostResponse {
+    id: number,
+    title: string
+    // userId: number,
+    // body: string,
+}
+
+interface WorkspaceProps {
+    requestCards: (limit?: number, start?: number) => Promise<PostResponse[]>
+}
+
+const Workspace: React.FC<WorkspaceProps> = ({ requestCards }) => {
     const [ref, dimensions] = useDimensions()
-    const [cards, setCards] = useState<{ title: string }[]>([])
+    const [cards, setCards] = useState<PostResponse[]>([])
     const eWidth = 150
     const eHeight = 100
     const gap = 30
@@ -18,13 +29,8 @@ const Workspace: React.FC = () => {
     const fetchTitles = useCallback(
         async (limit: number, start = 0) => {
             try {
-                const uri = `https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`
-                const response = await fetch(uri)
-                const posts = await response.json()
-                const titles = posts.map(({ title }: { title: string }) => ({
-                    title,
-                }))
-                setCards([...cards, ...titles])
+                const posts = await requestCards(limit, start)
+                setCards([...cards, ...posts])
             } catch (err) {
                 console.error(err)
             }
@@ -40,8 +46,8 @@ const Workspace: React.FC = () => {
 
     return (
         <div id="workspace" ref={ref}>
-            {cards.map((card, i) => (
-                <Card title={card.title} key={i} />
+            {cards.map((card) => (
+                <Card title={card.title} key={card.id} />
             ))}
         </div>
     )
