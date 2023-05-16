@@ -56,8 +56,8 @@ const Workspace: React.FC<WorkspaceProps> = ({ requestPosts }) => {
     const fetchTitles = useCallback(
         async (limit: number, start = 0) => {
             try {
-                const posts = await requestPosts(limit, start)
-                setPosts([...posts, ...posts])
+                const new_posts = await requestPosts(limit, start)
+                setPosts([...posts, ...new_posts])
             } catch (err) {
                 console.error(err)
             }
