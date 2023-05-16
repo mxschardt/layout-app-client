@@ -1,0 +1,43 @@
+#workspace {
+    --card-width: 150px;
+    --card-height: 100px;
+    --gap: 30px;
+
+    margin: 30px;
+
+    grid-area: workspace;
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
+    grid-template-rows: repeat(auto-fit, var(--card-height));
+    gap: var(--gap);
+
+    justify-items: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+#workspace .card {
+    width: var(--card-width);
+    height: var(--card-height);
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    color: var(--main-color);
+    background-color: var(--main-background-color);
+
+    border-radius: 5%;
+}
+
+#workspace .card span {
+    padding: 10px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
