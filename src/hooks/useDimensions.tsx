@@ -5,12 +5,11 @@ interface Size {
     height: number
 }
 
-// TODO: Сделать дженериком
-function useDimensions(): [
-    RefObject<HTMLDivElement> | null,
+function useDimensions<T extends HTMLElement = HTMLDivElement>(): [
+    RefObject<T> | null,
     Size
 ] {
-    const ref = useRef<HTMLDivElement>(null)
+    const ref = useRef<T>(null)
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
     useLayoutEffect(() => {
         if (ref.current) {
