@@ -3,7 +3,7 @@ import Card from "./Card"
 import useDimensions from "../hooks/useDimensions"
 
 interface PostResponse {
-    id: number,
+    id: number
     title: string
     // userId: number,
     // body: string,
@@ -16,13 +16,31 @@ interface WorkspaceProps {
 const Workspace: React.FC<WorkspaceProps> = ({ requestCards }) => {
     const [ref, dimensions] = useDimensions()
     const [cards, setCards] = useState<PostResponse[]>([])
-    const eWidth = 150
-    const eHeight = 100
-    const gap = 30
+    const defaultCard = { width: 150, height: 100, gap: 30}
+
+    const getCardSizeFromStyles = () => {
+        if (ref?.current) {
+            const computedStyles = window.getComputedStyle(ref.current)
+            const width = computedStyles.getPropertyValue("--card-width")
+            const height = computedStyles.getPropertyValue("--card-height")
+            const gap = computedStyles.getPropertyValue("--gap")
+            
+            if (width !== "" && height !== "" && gap !== "") {
+                return {
+                    width: parseFloat(width),
+                    height: parseFloat(height),
+                    gap: parseFloat(gap),
+                }
+            }
+        }
+        // Если не удалось получить значения, возвращаем null
+        return null
+    }
 
     const calcElementCount = () => {
-        const columns = Math.floor(dimensions.width / (eWidth + gap))
-        const rows = Math.round(dimensions.height / (eHeight + gap))
+        const { width, height, gap } = getCardSizeFromStyles() ?? defaultCard
+        const columns = Math.floor(dimensions.width / (width + gap))
+        const rows = Math.round(dimensions.height / (height + gap))
         return columns * rows
     }
 
