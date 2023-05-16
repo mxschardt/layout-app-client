@@ -9,20 +9,15 @@ interface PostResponse {
     // body: string,
 }
 
-interface WorkspaceProps {
-    // Функция для запроса новых постов
-    requestPosts: (limit?: number, start?: number) => Promise<PostResponse[]>
-}
-
-const Workspace: React.FC<WorkspaceProps> = ({ requestPosts }) => {
+const Workspace: React.FC = () => {
     // Используем хук, чтобы следить за размерами компонента
     const [ref, dimensions] = useDimensions()
     // Массив постов, получаемых с сервера
     const [posts, setPosts] = useState<PostResponse[]>([])
-    // Стандартные значения размеров плашки. 
-    // Используются в расчетах количества элементов, 
+    // Стандартные значения размеров плашки.
+    // Используются в расчетах количества элементов,
     // которые смогут поместиться на экране
-    const defaultCard = { width: 150, height: 100, gap: 30}
+    const defaultCard = { width: 150, height: 100, gap: 30 }
 
     // Импорт размеров плашки из CSS стилей
     const getCardSizeFromStyles = () => {
@@ -31,7 +26,7 @@ const Workspace: React.FC<WorkspaceProps> = ({ requestPosts }) => {
             const width = computedStyles.getPropertyValue("--card-width")
             const height = computedStyles.getPropertyValue("--card-height")
             const gap = computedStyles.getPropertyValue("--gap")
-            
+
             if (width !== "" && height !== "" && gap !== "") {
                 return {
                     width: parseFloat(width),
@@ -56,7 +51,9 @@ const Workspace: React.FC<WorkspaceProps> = ({ requestPosts }) => {
     const fetchTitles = useCallback(
         async (limit: number, start = 0) => {
             try {
-                const new_posts = await requestPosts(limit, start)
+                const uri = `/api/posts?limit=${limit}&start=${start}`
+                const response = await fetch(uri)
+                const new_posts = await response.json()
                 setPosts([...posts, ...new_posts])
             } catch (err) {
                 console.error(err)
@@ -65,7 +62,7 @@ const Workspace: React.FC<WorkspaceProps> = ({ requestPosts }) => {
         [calcElementCount]
     )
 
-    // Запрашиваем новые элементы когда количество карточек меньше, 
+    // Запрашиваем новые элементы когда количество карточек меньше,
     // чем количество элементов, которые могут поместиться на экране.
     // Вызывается только если поменялась вместимость компонента
     useEffect(() => {
