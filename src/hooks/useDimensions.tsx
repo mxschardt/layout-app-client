@@ -11,6 +11,7 @@ function useDimensions<T extends HTMLElement = HTMLDivElement>(): [
 ] {
     const ref = useRef<T>(null)
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+    
     useLayoutEffect(() => {
         if (ref.current) {
             setDimensions({
@@ -20,6 +21,8 @@ function useDimensions<T extends HTMLElement = HTMLDivElement>(): [
         }
     }, [])
 
+    // Стараемся избежать слишком большого количества рендеров 
+    // с помощью useCallback
     const handleSize = useCallback(() => {
         if (ref.current) {
             setDimensions({
