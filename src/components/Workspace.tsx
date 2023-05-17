@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react"
 import Card from "./Card"
 import useDimensions from "../hooks/useDimensions"
+import LoadingIcon from "./LoadingIcon"
 
 interface PostResponse {
     id: number
@@ -14,6 +15,8 @@ const Workspace: React.FC = () => {
     const [ref, dimensions] = useDimensions()
     // Массив постов, получаемых с сервера
     const [posts, setPosts] = useState<PostResponse[]>([])
+    // При загрузке элементов 
+    const [isLoading, setLoading] = useState(false)
     // Стандартные значения размеров плашки.
     // Используются в расчетах количества элементов,
     // которые смогут поместиться на экране
@@ -51,10 +54,9 @@ const Workspace: React.FC = () => {
     const fetchTitles = useCallback(
         async (limit: number, start = 0) => {
             try {
-                const uri = `/api/posts?limit=${limit}&start=${start}`
+                const uri = `https://jsonplaceholder.typicode.com/posts/api/posts?_limit=${limit}&_start=${start}`
                 const response = await fetch(uri)
-                const new_posts = await response.json()
-                setPosts([...posts, ...new_posts])
+                return await response.json()
             } catch (err) {
                 console.error(err)
             }
@@ -67,15 +69,25 @@ const Workspace: React.FC = () => {
     // Вызывается только если поменялась вместимость компонента
     useEffect(() => {
         if (posts.length < calcElementCount()) {
-            fetchTitles(calcElementCount() - posts.length, posts.length)
+            setLoading(true)
+            fetchTitles(calcElementCount() - posts.length, posts.length).then(
+                (newPosts) => {
+                    setPosts([...posts, ...newPosts])
+                    setLoading(false)
+                }
+            )
         }
     }, [calcElementCount()])
 
     return (
         <div id="workspace" ref={ref}>
-            {posts.map((post) => (
-                <Card title={post.title} key={post.id} />
-            ))}
+            {posts.length !== 0 ? (
+                posts.map((post) => <Card title={post.title} key={post.id} />)
+            ) : isLoading ? (
+                <LoadingIcon />
+            ) : (
+                <h1>Нет постов</h1>
+            )}
         </div>
     )
 }
